@@ -40,3 +40,49 @@ variable "github_repository" {
   default     = "boba-eks-task"
 }
 
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+
+variable "public_subnets" {
+  description = "Public subnet configuration"
+  type = map(object({
+    cidr = string
+    az   = string
+  }))
+
+  default = {
+    public-a = {
+      cidr = "10.0.0.0/20"
+      az   = "eu-west-2a"
+    }
+
+    public-b = {
+      cidr = "10.0.16.0/20"
+      az   = "eu-west-2b"
+    }
+  }
+}
+
+variable "private_subnets" {
+  description = "Private subnet configuration"
+  type = map(object({
+    cidr = string
+    az   = string
+  }))
+
+  default = {
+    private-a = {
+      cidr = "10.0.128.0/20"
+      az   = "eu-west-2a"
+    }
+
+    private-b = {
+      cidr = "10.0.144.0/20"
+      az   = "eu-west-2b"
+    }
+  }
+}
