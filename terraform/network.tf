@@ -1,3 +1,4 @@
+# VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -7,7 +8,7 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-#PUBLIC SUBNETS 
+# Public subnets 
 resource "aws_subnet" "public_subnets" {
   for_each = var.public_subnets
 
@@ -17,11 +18,10 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${local.DEFAULT_NAME}-subnet-${each.key}"
+    Name                     = "${local.DEFAULT_NAME}-subnet-${each.key}"
     "kubernetes.io/role/elb" = "1"
   }
 }
-
 
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main_vpc.id
@@ -30,7 +30,6 @@ resource "aws_internet_gateway" "internet_gateway" {
     Name = "${local.DEFAULT_NAME}-igw"
   }
 }
-
 
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main_vpc.id
@@ -45,7 +44,6 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
-
 resource "aws_route_table_association" "public_rt_association" {
   for_each = aws_subnet.public_subnets
 
@@ -53,8 +51,7 @@ resource "aws_route_table_association" "public_rt_association" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
-
-#PRIVATE SUBNETS
+# Private subnets
 resource "aws_subnet" "private_subnets" {
   for_each = var.private_subnets
 
@@ -63,11 +60,10 @@ resource "aws_subnet" "private_subnets" {
   availability_zone = each.value.az
 
   tags = {
-    Name = "${local.DEFAULT_NAME}-subnet-${each.key}"
+    Name                              = "${local.DEFAULT_NAME}-subnet-${each.key}"
     "kubernetes.io/role/internal-elb" = "1"
   }
 }
-
 
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
@@ -76,7 +72,6 @@ resource "aws_eip" "nat_eip" {
     Name = "${local.DEFAULT_NAME}-nat-eip"
   }
 }
-
 
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_eip.id
@@ -88,7 +83,6 @@ resource "aws_nat_gateway" "nat_gateway" {
 
   depends_on = [aws_internet_gateway.internet_gateway]
 }
-
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.main_vpc.id
@@ -103,10 +97,49 @@ resource "aws_route_table" "private_route_table" {
   }
 }
 
-
 resource "aws_route_table_association" "private_rt_association" {
   for_each = aws_subnet.private_subnets
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_route_table.id
+}
+
+# EKS security groups
+resource "aws_security_group" "eks_control_plane" {
+  name        = "${local.DEFAULT_NAME}-eks-control-plane-sg"
+  description = "EKS control plane security group"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  tags = {
+    Name = "${local.DEFAULT_NAME}-eks-control-plane-sg"
+  }
+}
+
+resource "aws_security_group" "eks_nodes" {
+  name        = "${local.DEFAULT_NAME}-eks-nodes-sg"
+  description = "EKS worker nodes security group"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  tags = {
+    Name = "${local.DEFAULT_NAME}-eks-nodes-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "eks_ingress" {
+  for_each = local.EKS_INGRESS_RULES
+
+  security_group_id            = each.value.security_group_id
+  referenced_security_group_id = each.value.source_sg_id
+
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
+  ip_protocol = each.value.protocol
+}
+
+resource "aws_vpc_security_group_egress_rule" "eks_egress" {
+  for_each = local.EKS_EGRESS_RULES
+
+  security_group_id = each.value.security_group_id
+  cidr_ipv4         = each.value.cidr
+  ip_protocol       = each.value.protocol
 }
