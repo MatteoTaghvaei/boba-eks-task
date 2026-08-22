@@ -81,3 +81,22 @@ resource "aws_ecr_repository" "ecr_repository" {
     Name = "${local.DEFAULT_NAME}-ecr"
   }
 }
+
+# Eks addon 
+resource "aws_eks_addon" "pod_identity_agent" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "eks-pod-identity-agent"
+
+  depends_on = [
+    aws_eks_node_group.nodes_group
+  ]
+}
+
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "metrics-server"
+
+  depends_on = [
+    aws_eks_node_group.nodes_group
+  ]
+}
