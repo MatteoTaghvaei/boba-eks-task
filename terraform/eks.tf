@@ -69,3 +69,15 @@ resource "aws_launch_template" "eks_nodes_lt" {
   }
 }
 
+resource "aws_ecr_repository" "ecr_repository" {
+  name                 = "${local.DEFAULT_NAME}-ecr"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name = "${local.DEFAULT_NAME}-ecr"
+  }
+}
