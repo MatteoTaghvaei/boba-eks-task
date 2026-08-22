@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webserver
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/MatteoTaghvaei/boba-eks-task.git
+    targetRevision: master
+    path: kubernetes/manifest
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: webserver
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
