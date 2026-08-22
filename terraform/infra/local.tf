@@ -33,15 +33,13 @@ locals {
       security_group_id = aws_security_group.eks_nodes_sg.id
       source_sg_id      = aws_security_group.eks_control_plane_sg.id
       from_port         = 10250
-      to_port           = 10250
+      to_port           = 10251
       protocol          = "tcp"
     }
 
     nodes_internal = {
       security_group_id = aws_security_group.eks_nodes_sg.id
       source_sg_id      = aws_security_group.eks_nodes_sg.id
-      from_port         = 0
-      to_port           = 0
       protocol          = "-1"
     }
   }
