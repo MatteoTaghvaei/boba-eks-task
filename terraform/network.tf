@@ -105,7 +105,7 @@ resource "aws_route_table_association" "private_rt_association" {
 }
 
 # EKS security groups
-resource "aws_security_group" "eks_control_plane" {
+resource "aws_security_group" "eks_control_plane_sg" {
   name        = "${local.DEFAULT_NAME}-eks-control-plane-sg"
   description = "EKS control plane security group"
   vpc_id      = aws_vpc.main_vpc.id
@@ -115,7 +115,7 @@ resource "aws_security_group" "eks_control_plane" {
   }
 }
 
-resource "aws_security_group" "eks_nodes" {
+resource "aws_security_group" "eks_nodes_sg" {
   name        = "${local.DEFAULT_NAME}-eks-nodes-sg"
   description = "EKS worker nodes security group"
   vpc_id      = aws_vpc.main_vpc.id
@@ -125,7 +125,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "eks_ingress" {
+resource "aws_vpc_security_group_ingress_rule" "eks_ingress_rule" {
   for_each = local.EKS_INGRESS_RULES
 
   security_group_id            = each.value.security_group_id
@@ -136,10 +136,29 @@ resource "aws_vpc_security_group_ingress_rule" "eks_ingress" {
   ip_protocol = each.value.protocol
 }
 
-resource "aws_vpc_security_group_egress_rule" "eks_egress" {
+resource "aws_vpc_security_group_egress_rule" "eks_egress_rules" {
   for_each = local.EKS_EGRESS_RULES
 
   security_group_id = each.value.security_group_id
   cidr_ipv4         = each.value.cidr
   ip_protocol       = each.value.protocol
+}
+
+# RDS security group
+resource "aws_security_group" "mysql_sg" {
+  name        = "${local.DEFAULT_NAME}-mysql-sg"
+  description = "MySQL security group"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  ingress {
+    description     = "MySQL from EKS nodes"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes_sg.id]
+  }
+
+  tags = {
+    Name = "${local.DEFAULT_NAME}-mysql-sg"
+  }
 }

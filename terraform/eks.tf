@@ -12,7 +12,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     endpoint_private_access = true
     endpoint_public_access  = true
     security_group_ids = [
-      aws_security_group.eks_control_plane.id
+      aws_security_group.eks_control_plane_sg.id
     ]
   }
 
@@ -40,8 +40,8 @@ resource "aws_eks_node_group" "nodes_group" {
   }
 
   launch_template {
-    id      = aws_launch_template.eks_nodes.id
-    version = aws_launch_template.eks_nodes.latest_version
+    id      = aws_launch_template.eks_nodes_lt.id
+    version = aws_launch_template.eks_nodes_lt.latest_version
   }
 
   depends_on = [
@@ -53,11 +53,11 @@ resource "aws_eks_node_group" "nodes_group" {
   }
 }
 
-resource "aws_launch_template" "eks_nodes" {
+resource "aws_launch_template" "eks_nodes_lt" {
   name_prefix = "${local.DEFAULT_NAME}-eks-nodes-"
 
   vpc_security_group_ids = [
-    aws_security_group.eks_nodes.id
+    aws_security_group.eks_nodes_sg.id
   ]
 
   tag_specifications {

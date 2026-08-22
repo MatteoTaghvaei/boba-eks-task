@@ -40,6 +40,24 @@ variable "github_repository" {
   default     = "boba-eks-task"
 }
 
+variable "db_name" {
+  description = "MySQL database name"
+  type        = string
+  default     = "webserver"
+}
+
+variable "db_username" {
+  description = "MySQL master username"
+  type        = string
+  default     = "db_admin"
+}
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string

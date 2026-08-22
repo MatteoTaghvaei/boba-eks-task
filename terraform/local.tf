@@ -22,24 +22,24 @@ locals {
 
   EKS_INGRESS_RULES = {
     control_plane_from_nodes = {
-      security_group_id = aws_security_group.eks_control_plane.id
-      source_sg_id      = aws_security_group.eks_nodes.id
+      security_group_id = aws_security_group.eks_control_plane_sg.id
+      source_sg_id      = aws_security_group.eks_nodes_sg.id
       from_port         = 443
       to_port           = 443
       protocol          = "tcp"
     }
 
     nodes_from_control_plane = {
-      security_group_id = aws_security_group.eks_nodes.id
-      source_sg_id      = aws_security_group.eks_control_plane.id
+      security_group_id = aws_security_group.eks_nodes_sg.id
+      source_sg_id      = aws_security_group.eks_control_plane_sg.id
       from_port         = 10250
       to_port           = 10250
       protocol          = "tcp"
     }
 
     nodes_internal = {
-      security_group_id = aws_security_group.eks_nodes.id
-      source_sg_id      = aws_security_group.eks_nodes.id
+      security_group_id = aws_security_group.eks_nodes_sg.id
+      source_sg_id      = aws_security_group.eks_nodes_sg.id
       from_port         = 0
       to_port           = 0
       protocol          = "-1"
@@ -48,13 +48,13 @@ locals {
 
   EKS_EGRESS_RULES = {
     control_plane = {
-      security_group_id = aws_security_group.eks_control_plane.id
+      security_group_id = aws_security_group.eks_control_plane_sg.id
       cidr              = "0.0.0.0/0"
       protocol          = "-1"
     }
 
     nodes = {
-      security_group_id = aws_security_group.eks_nodes.id
+      security_group_id = aws_security_group.eks_nodes_sg.id
       cidr              = "0.0.0.0/0"
       protocol          = "-1"
     }
