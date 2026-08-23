@@ -75,6 +75,10 @@ A few security choices were included in the setup:
 - Argo CD uses a read-only GitHub deploy key
 - HTTPS is enabled with Let's Encrypt
 
+For the private GitHub repository, Argo CD requires a read-only deploy key.
+
+The repository credential is created manually in the `argocd` namespace and is not stored in Git.
+
 ## Terraform
 
 Terraform is split into two parts:
