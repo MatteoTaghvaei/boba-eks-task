@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: webserver
-          image: 173567747318.dkr.ecr.eu-west-2.amazonaws.com/boba-eks-dev-ecr:9d5e2912be7e50d8dd1d9ecc5eaf13846b3fb6da
+          image: 173567747318.dkr.ecr.eu-west-2.amazonaws.com/boba-eks-dev-ecr:e923792f4bdd3e756b3130af96d53e87a7845bd9
           imagePullPolicy: Always
 
           ports:
