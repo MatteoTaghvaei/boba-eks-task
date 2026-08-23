@@ -91,7 +91,7 @@ resource "aws_iam_role" "github_actions_role" {
           }
 
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repository}:*"
+            "token.actions.githubusercontent.com:sub" = "repo:MatteoTaghvaei@102242227/boba-eks-task@1343026443:*"
           }
         }
       }
