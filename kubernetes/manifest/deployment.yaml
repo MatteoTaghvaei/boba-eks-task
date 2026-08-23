@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: webserver
-          image: <ECR_REPOSITORY_URL>:latest
+          image: 173567747318.dkr.ecr.eu-west-2.amazonaws.com/boba-eks-dev-ecr:9d5e2912be7e50d8dd1d9ecc5eaf13846b3fb6da
           imagePullPolicy: Always
 
           ports:
