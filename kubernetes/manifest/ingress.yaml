@@ -3,11 +3,20 @@ kind: Ingress
 metadata:
   name: webserver
   namespace: webserver
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
 spec:
   ingressClassName: traefik
 
+  tls:
+    - hosts:
+        - boba.monocloud.tech
+      secretName: monocloud-tls
+
   rules:
-    - http:
+    - host: boba.monocloud.tech
+      http:
         paths:
           - path: /
             pathType: Prefix
