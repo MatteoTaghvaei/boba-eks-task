@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/MatteoTaghvaei/boba-eks-task.git
+    repoURL: git@github.com:MatteoTaghvaei/boba-eks-task.git
     targetRevision: master
     path: kubernetes/manifest
 

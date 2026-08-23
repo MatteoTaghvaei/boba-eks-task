@@ -37,7 +37,7 @@ variable "app_name" {
 variable "github_repository" {
   description = "GitHub repository name"
   type        = string
-  default     = "boba-eks-task"
+  default     = "MatteoTaghvaei/boba-eks-task"
 }
 
 variable "db_name" {

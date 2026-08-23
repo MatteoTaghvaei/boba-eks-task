@@ -59,3 +59,53 @@ resource "aws_iam_role_policy_attachment" "eks_node_policies" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = each.value
 }
+
+# OIDC role
+resource "aws_iam_openid_connect_provider" "github_oidc" {
+  url = "https://token.actions.githubusercontent.com"
+
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
+}
+
+resource "aws_iam_role" "github_actions_role" {
+  name = "${local.DEFAULT_NAME}-github-actions-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github_oidc.arn
+        }
+
+        Action = "sts:AssumeRoleWithWebIdentity"
+
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repository}:*"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${local.DEFAULT_NAME}-github-actions-role"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_policies" {
+  for_each = local.IAM_POLICIES.GITHUB_ACTIONS
+
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = each.value
+}

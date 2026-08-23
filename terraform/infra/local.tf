@@ -11,6 +11,10 @@ locals {
       ecr_pull = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
       cni      = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
     }
+
+    GITHUB_ACTIONS = {
+      ecr = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+    }
   }
 
   ALL_SUBNETS_ID = flatten([
