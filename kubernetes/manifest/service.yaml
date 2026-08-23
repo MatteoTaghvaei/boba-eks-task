@@ -3,12 +3,16 @@ kind: Service
 metadata:
   name: webserver
   namespace: webserver
+  labels:
+    app: webserver
+
 spec:
   selector:
     app: webserver
 
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8000
 
   type: ClusterIP
