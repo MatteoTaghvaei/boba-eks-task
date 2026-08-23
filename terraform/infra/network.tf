@@ -132,7 +132,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_ingress_rule" {
   referenced_security_group_id = each.value.source_sg_id
 
   from_port = try(each.value.from_port, null)
-  to_port   = try(each.value.from_port, null)
+  to_port   = try(each.value.to_port, null)
   ip_protocol = each.value.protocol
 }
 
